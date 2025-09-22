@@ -1,18 +1,21 @@
-import { Component, inject, signal, OnInit } from '@angular/core';
+import { Component, inject, signal, OnInit, ChangeDetectionStrategy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { DataService } from './data.service';
+import { LoadingComponent } from './loading.component';
+import { NotificationService } from './notification.service';
 
 @Component({
   selector: 'app-blog',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, LoadingComponent],
+  changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="page">
       <div class="page-header">
         <h1>Blog</h1>
         <div class="breadcrumb">Home > Blog</div>
       </div>
-      <div class="loading" *ngIf="loading()">Loading posts...</div>
+      <app-loading *ngIf="loading()"></app-loading>
       <div class="posts" *ngIf="!loading()">
         <article *ngFor="let post of posts()" class="post" (click)="selectPost(post)">
           <h3>{{post.title}}</h3>
@@ -22,8 +25,11 @@ import { DataService } from './data.service';
       </div>
       <div class="pagination" *ngIf="!loading()">
         <button (click)="prevPage()" [disabled]="currentPage() === 1">Previous</button>
-        <span>Page {{currentPage()}}</span>
+        <span>Page {{currentPage()}} of {{totalPages()}}</span>
         <button (click)="nextPage()" [disabled]="!hasMore()">Next</button>
+      </div>
+      <div class="infinite-scroll" *ngIf="!loading() && hasMore()">
+        <button (click)="loadMore()" class="load-more-btn">Load More Posts</button>
       </div>
     </div>
   `,
@@ -40,14 +46,21 @@ import { DataService } from './data.service';
     .pagination { display: flex; justify-content: center; align-items: center; gap: 20px; margin-top: 30px; }
     .pagination button { padding: 10px 20px; border: 1px solid #ddd; background: white; border-radius: 4px; cursor: pointer; }
     .pagination button:disabled { opacity: 0.5; cursor: not-allowed; }
+    .infinite-scroll { text-align: center; margin-top: 30px; }
+    .load-more-btn { padding: 12px 24px; background: #2c3e50; color: white; border: none; border-radius: 6px; cursor: pointer; transition: background 0.3s; }
+    .load-more-btn:hover { background: #34495e; }
   `]
 })
 export class BlogComponent implements OnInit {
   private dataService = inject(DataService);
+  private notificationService = inject(NotificationService);
   posts = signal<any[]>([]);
+  allPosts = signal<any[]>([]);
   loading = signal(true);
   currentPage = signal(1);
   hasMore = signal(false);
+  totalPages = signal(1);
+  postsPerPage = 3;
 
   ngOnInit() {
     this.loadPosts();
@@ -56,11 +69,23 @@ export class BlogComponent implements OnInit {
   loadPosts() {
     this.loading.set(true);
     setTimeout(() => {
-      const result = this.dataService.getBlogPosts(this.currentPage());
+      const result = this.dataService.getBlogPosts(this.currentPage(), this.postsPerPage);
       this.posts.set(result.posts);
       this.hasMore.set(result.hasMore);
+      this.totalPages.set(Math.ceil(result.total / this.postsPerPage));
       this.loading.set(false);
-    }, 500);
+    }, 800);
+  }
+
+  loadMore() {
+    if (this.hasMore()) {
+      const nextPage = this.currentPage() + 1;
+      const result = this.dataService.getBlogPosts(nextPage, this.postsPerPage);
+      this.posts.update(current => [...current, ...result.posts]);
+      this.currentPage.set(nextPage);
+      this.hasMore.set(result.hasMore);
+      this.notificationService.success(`Loaded ${result.posts.length} more posts`);
+    }
   }
 
   nextPage() {
@@ -78,6 +103,6 @@ export class BlogComponent implements OnInit {
   }
 
   selectPost(post: any) {
-    console.log('Selected post:', post);
+    this.notificationService.info(`Opening: ${post.title}`);
   }
 }

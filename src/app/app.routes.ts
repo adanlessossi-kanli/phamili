@@ -1,15 +1,35 @@
 import { Routes } from '@angular/router';
-import { HomeComponent } from './home.component';
-import { BlogComponent } from './blog.component';
-import { MediaComponent } from './media.component';
-import { AboutComponent } from './about.component';
-import { NotFoundComponent } from './not-found.component';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
-  { path: 'home', component: HomeComponent, title: 'Home - Phamili' },
-  { path: 'blog', component: BlogComponent, title: 'Blog - Phamili' },
-  { path: 'media', component: MediaComponent, title: 'Media - Phamili' },
-  { path: 'about', component: AboutComponent, title: 'About - Phamili' },
-  { path: '**', component: NotFoundComponent, title: '404 - Page Not Found' }
+  { 
+    path: 'home', 
+    loadComponent: () => import('./home.component').then(m => m.HomeComponent),
+    title: 'Home - Phamili' 
+  },
+  { 
+    path: 'blog', 
+    loadComponent: () => import('./blog.component').then(m => m.BlogComponent),
+    title: 'Blog - Phamili' 
+  },
+  { 
+    path: 'media', 
+    loadComponent: () => import('./media.component').then(m => m.MediaComponent),
+    title: 'Media - Phamili' 
+  },
+  { 
+    path: 'about', 
+    loadComponent: () => import('./about.component').then(m => m.AboutComponent),
+    title: 'About - Phamili' 
+  },
+  { 
+    path: 'login', 
+    loadComponent: () => import('./login.component').then(m => m.LoginComponent),
+    title: 'Login - Phamili' 
+  },
+  { 
+    path: '**', 
+    loadComponent: () => import('./not-found.component').then(m => m.NotFoundComponent),
+    title: '404 - Page Not Found' 
+  }
 ];
