@@ -37,4 +37,8 @@ export class NotificationService {
   error(message: string) { return this.show(message, 'error'); }
   warning(message: string) { return this.show(message, 'warning'); }
   info(message: string) { return this.show(message, 'info'); }
+
+  clearAll() {
+    this.notifications.set([]);
+  }
 }

@@ -1,6 +1,7 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { I18nService } from './i18n.service';
 
 @Component({
   selector: 'app-sidebar',
@@ -18,7 +19,7 @@ import { RouterModule } from '@angular/router';
            class="nav-item"
            routerLinkActive="active">
           <span class="icon">{{item.icon}}</span>
-          <span class="label" *ngIf="!isCollapsed">{{item.label}}</span>
+          <span class="label" *ngIf="!isCollapsed">{{i18n.translate(item.labelKey)}}</span>
         </a>
       </nav>
     </div>
@@ -85,11 +86,13 @@ import { RouterModule } from '@angular/router';
   `]
 })
 export class SidebarComponent {
+  i18n = inject(I18nService);
+  
   menuItems = [
-    { icon: '🏠', label: 'Home', route: '/home' },
-    { icon: '📝', label: 'Blog', route: '/blog' },
-    { icon: '🎬', label: 'Media', route: '/media' },
-    { icon: 'ℹ️', label: 'About', route: '/about' }
+    { icon: '🏠', labelKey: 'nav.home', route: '/home' },
+    { icon: '📝', labelKey: 'nav.blog', route: '/blog' },
+    { icon: '🎬', labelKey: 'nav.media', route: '/media' },
+    { icon: 'ℹ️', labelKey: 'nav.about', route: '/about' }
   ];
 
   isCollapsed = false;

@@ -1,5 +1,6 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
 import { RouterModule } from '@angular/router';
+import { I18nService } from './i18n.service';
 
 @Component({
   selector: 'app-home',
@@ -8,27 +9,27 @@ import { RouterModule } from '@angular/router';
   template: `
     <div class="page">
       <div class="hero">
-        <h1>Welcome to Phamili</h1>
-        <p>Your modern Angular application with cutting-edge features</p>
+        <h1>{{i18n.translate('home.welcome')}}</h1>
+        <p>{{i18n.translate('home.subtitle')}}</p>
         <div class="cta-buttons">
-          <a routerLink="/blog" class="btn primary">Read Blog</a>
-          <a routerLink="/media" class="btn secondary">View Gallery</a>
+          <a routerLink="/blog" class="btn primary">{{i18n.translate('nav.blog')}}</a>
+          <a routerLink="/media" class="btn secondary">{{i18n.translate('nav.media')}}</a>
         </div>
       </div>
       <div class="features">
         <div class="feature-card">
           <div class="icon">🎨</div>
-          <h3>Modern Design</h3>
+          <h3>{{i18n.translate('home.features.modern')}}</h3>
           <p>Clean interface with dark/light themes and smooth animations</p>
         </div>
         <div class="feature-card">
           <div class="icon">⚡</div>
-          <h3>Fast Performance</h3>
+          <h3>{{i18n.translate('home.features.fast')}}</h3>
           <p>Optimized with Angular signals and lazy loading</p>
         </div>
         <div class="feature-card">
           <div class="icon">📱</div>
-          <h3>Responsive</h3>
+          <h3>{{i18n.translate('home.features.responsive')}}</h3>
           <p>Perfect experience across all devices and screen sizes</p>
         </div>
       </div>
@@ -52,4 +53,6 @@ import { RouterModule } from '@angular/router';
     .feature-card p { color: #7f8c8d; line-height: 1.6; }
   `]
 })
-export class HomeComponent {}
+export class HomeComponent {
+  i18n = inject(I18nService);
+}

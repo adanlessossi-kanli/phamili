@@ -1,35 +1,23 @@
 import { Routes } from '@angular/router';
+import { authGuard } from './guards/auth.guard';
 
 export const routes: Routes = [
   { path: '', redirectTo: '/home', pathMatch: 'full' },
-  { 
-    path: 'home', 
-    loadComponent: () => import('./home.component').then(m => m.HomeComponent),
-    title: 'Home - Phamili' 
-  },
+  { path: 'home', loadComponent: () => import('./home.component').then(m => m.HomeComponent) },
+  { path: 'login', loadComponent: () => import('./login.component').then(m => m.LoginComponent) },
   { 
     path: 'blog', 
     loadComponent: () => import('./blog.component').then(m => m.BlogComponent),
-    title: 'Blog - Phamili' 
+    canActivate: [authGuard]
   },
   { 
     path: 'media', 
     loadComponent: () => import('./media.component').then(m => m.MediaComponent),
-    title: 'Media - Phamili' 
+    canActivate: [authGuard]
   },
   { 
     path: 'about', 
-    loadComponent: () => import('./about.component').then(m => m.AboutComponent),
-    title: 'About - Phamili' 
+    loadComponent: () => import('./about.component').then(m => m.AboutComponent)
   },
-  { 
-    path: 'login', 
-    loadComponent: () => import('./login.component').then(m => m.LoginComponent),
-    title: 'Login - Phamili' 
-  },
-  { 
-    path: '**', 
-    loadComponent: () => import('./not-found.component').then(m => m.NotFoundComponent),
-    title: '404 - Page Not Found' 
-  }
+  { path: '**', loadComponent: () => import('./not-found.component').then(m => m.NotFoundComponent) }
 ];

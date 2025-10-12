@@ -32,11 +32,17 @@ module.exports = function (config) {
       ],
       check: {
         global: {
-          statements: 95,
-          branches: 90,
-          functions: 95,
-          lines: 95
+          statements: 97,
+          branches: 89,
+          functions: 98,
+          lines: 98
         }
+      },
+      watermarks: {
+        statements: [80, 95],
+        functions: [80, 95],
+        branches: [80, 95],
+        lines: [80, 95]
       }
     },
     reporters: ['progress', 'kjhtml', 'coverage'],

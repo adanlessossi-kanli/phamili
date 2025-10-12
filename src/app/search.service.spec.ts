@@ -27,21 +27,27 @@ describe('SearchService', () => {
     expect(service).toBeTruthy();
   });
 
-  it('should search posts and media', () => {
-    const results = service.search('test');
-    expect(results.posts.length).toBe(1);
-    expect(results.media.length).toBe(1);
+  it('should search and update results signal', () => {
+    service.search('test');
+    expect(service.searchQuery$()).toBe('test');
+    expect(service.isSearching$()).toBe(true);
   });
 
-  it('should return empty results for empty query', () => {
-    const results = service.search('');
-    expect(results.posts.length).toBe(0);
-    expect(results.media.length).toBe(0);
-  });
-
-  it('should clear search', () => {
+  it('should clear search results', () => {
     service.search('test');
     service.clearSearch();
     expect(service.searchQuery$()).toBe('');
+    expect(service.searchResults$().length).toBe(0);
+  });
+
+  it('should handle empty query', () => {
+    service.search('');
+    expect(service.searchResults$().length).toBe(0);
+    expect(service.isSearching$()).toBe(false);
+  });
+
+  it('should set searching state', () => {
+    service.search('test');
+    expect(service.isSearching$()).toBe(true);
   });
 });

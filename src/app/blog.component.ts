@@ -3,11 +3,14 @@ import { CommonModule } from '@angular/common';
 import { DataService } from './data.service';
 import { LoadingComponent } from './loading.component';
 import { NotificationService } from './notification.service';
+import { PaginationComponent } from './components/pagination.component';
+import { CacheService } from './services/cache.service';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-blog',
   standalone: true,
-  imports: [CommonModule, LoadingComponent],
+  imports: [CommonModule, LoadingComponent, PaginationComponent],
   changeDetection: ChangeDetectionStrategy.OnPush,
   template: `
     <div class="page">
@@ -15,22 +18,29 @@ import { NotificationService } from './notification.service';
         <h1>Blog</h1>
         <div class="breadcrumb">Home > Blog</div>
       </div>
-      <app-loading *ngIf="loading()"></app-loading>
-      <div class="posts" *ngIf="!loading()">
-        <article *ngFor="let post of posts()" class="post" (click)="selectPost(post)">
-          <h3>{{post.title}}</h3>
-          <p class="date">{{post.date}}</p>
-          <p>{{post.excerpt}}</p>
-        </article>
-      </div>
-      <div class="pagination" *ngIf="!loading()">
-        <button (click)="prevPage()" [disabled]="currentPage() === 1">Previous</button>
-        <span>Page {{currentPage()}} of {{totalPages()}}</span>
-        <button (click)="nextPage()" [disabled]="!hasMore()">Next</button>
-      </div>
-      <div class="infinite-scroll" *ngIf="!loading() && hasMore()">
-        <button (click)="loadMore()" class="load-more-btn">Load More Posts</button>
-      </div>
+      @if (loading()) {
+        <app-loading></app-loading>
+      } @else {
+        <div class="posts">
+          @for (post of posts(); track post.id) {
+            <article class="post" (click)="selectPost(post)">
+              <h3>{{post.title}}</h3>
+              <p class="date">{{post.date}}</p>
+              <p>{{post.excerpt}}</p>
+            </article>
+          }
+        </div>
+        <div class="pagination">
+          <button (click)="prevPage()" [disabled]="currentPage() === 1">Previous</button>
+          <span>Page {{currentPage()}} of {{totalPages()}}</span>
+          <button (click)="nextPage()" [disabled]="!hasMore()">Next</button>
+        </div>
+        @if (hasMore()) {
+          <div class="infinite-scroll">
+            <button (click)="loadMore()" class="load-more-btn">Load More Posts</button>
+          </div>
+        }
+      }
     </div>
   `,
   styles: [`
@@ -54,6 +64,7 @@ import { NotificationService } from './notification.service';
 export class BlogComponent implements OnInit {
   private dataService = inject(DataService);
   private notificationService = inject(NotificationService);
+  private cacheService = inject(CacheService);
   posts = signal<any[]>([]);
   allPosts = signal<any[]>([]);
   loading = signal(true);

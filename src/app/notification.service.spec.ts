@@ -33,4 +33,35 @@ describe('NotificationService', () => {
       done();
     }, 150);
   });
+
+  it('should show success notification', () => {
+    service.success('Success message');
+    expect(service.notifications$().length).toBe(1);
+    expect(service.notifications$()[0].type).toBe('success');
+  });
+
+  it('should show error notification', () => {
+    service.error('Error message');
+    expect(service.notifications$().length).toBe(1);
+    expect(service.notifications$()[0].type).toBe('error');
+  });
+
+  it('should show info notification', () => {
+    service.info('Info message');
+    expect(service.notifications$().length).toBe(1);
+    expect(service.notifications$()[0].type).toBe('info');
+  });
+
+  it('should show warning notification', () => {
+    service.warning('Warning message');
+    expect(service.notifications$().length).toBe(1);
+    expect(service.notifications$()[0].type).toBe('warning');
+  });
+
+  it('should clear all notifications', () => {
+    service.success('Test 1');
+    service.error('Test 2');
+    service.clearAll();
+    expect(service.notifications$().length).toBe(0);
+  });
 });

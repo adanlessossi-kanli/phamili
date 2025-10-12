@@ -6,6 +6,9 @@
     "start": "ng serve",
     "build": "ng build",
     "build:prod": "ng build --configuration production",
+    "build:i18n": "ng build --localize",
+    "extract-i18n": "ng extract-i18n",
+    "serve:fr": "ng serve --configuration=development --aot --locale=fr",
     "lint": "ng lint",
     "lint:fix": "ng lint --fix",
     "format": "prettier --write \"src/**/*.{ts,html,css,scss}\"",
@@ -16,7 +19,14 @@
     "watch": "ng build --watch --configuration development",
     "test": "ng test --code-coverage --watch=false",
     "test:watch": "ng test --code-coverage",
-    "test:ci": "ng test --code-coverage --watch=false --browsers=ChromeHeadless"
+    "test:ci": "ng test --code-coverage --watch=false --browsers=ChromeHeadless",
+    "test:coverage": "ng test --code-coverage --watch=false --browsers=ChromeHeadless && echo 'Coverage report generated in coverage/phamili/index.html'",
+    "test:coverage-check": "ng test --code-coverage --watch=false --browsers=ChromeHeadless --progress=false",
+    "analyze": "ng build --stats-json && npx webpack-bundle-analyzer dist/phamili/stats.json",
+    "lighthouse": "ng build && npx lighthouse http://localhost:4200 --output html --output-path ./lighthouse-report.html",
+    "test:all": "npm run test:coverage && npm run lint && npm run format:check",
+    "i18n:extract": "ng extract-i18n --output-path src/locale",
+    "i18n:build": "ng build --localize"
   },
   "prettier": {
     "printWidth": 100,
@@ -36,10 +46,15 @@
     "@angular/compiler": "^20.2.0",
     "@angular/core": "^20.2.0",
     "@angular/forms": "^20.2.0",
+    "@angular/localize": "^20.3.4",
     "@angular/platform-browser": "^20.2.0",
     "@angular/router": "^20.2.0",
+    "@angular/service-worker": "^20.3.4",
+    "@aws-sdk/client-cognito-identity-provider": "^3.908.0",
+    "@aws-sdk/credential-providers": "^3.908.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
+    "workbox-sw": "^7.0.0",
     "zone.js": "~0.15.0"
   },
   "devDependencies": {

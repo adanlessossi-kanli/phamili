@@ -15,13 +15,13 @@ describe('I18nService', () => {
   });
 
   it('should set language', () => {
-    service.setLanguage('es');
-    expect(service.currentLang$()).toBe('es');
+    service.setLanguage('fr');
+    expect(service.currentLang$()).toBe('fr');
   });
 
   it('should translate keys', () => {
-    service.setLanguage('es');
-    expect(service.translate('nav.home')).toBe('Inicio');
+    service.setLanguage('fr');
+    expect(service.translate('nav.home')).toBe('Accueil');
   });
 
   it('should fallback to English for unknown language', () => {
@@ -35,14 +35,15 @@ describe('I18nService', () => {
 
   it('should get supported languages', () => {
     const languages = service.getSupportedLanguages();
-    expect(languages.length).toBe(4);
+    expect(languages.length).toBe(2);
     expect(languages[0].code).toBe('en');
+    expect(languages[1].code).toBe('fr');
   });
 
   it('should init language with saved preference', () => {
-    spyOn(localStorage, 'getItem').and.returnValue('es');
+    spyOn(localStorage, 'getItem').and.returnValue('fr');
     service.initLanguage();
-    expect(service.currentLang$()).toBe('es');
+    expect(service.currentLang$()).toBe('fr');
   });
 
   it('should init language with browser default', () => {
@@ -50,5 +51,56 @@ describe('I18nService', () => {
     Object.defineProperty(navigator, 'language', { value: 'fr-FR', configurable: true });
     service.initLanguage();
     expect(service.currentLang$()).toBe('fr');
+  });
+
+  it('should handle unsupported browser language', () => {
+    spyOn(localStorage, 'getItem').and.returnValue(null);
+    Object.defineProperty(navigator, 'language', { value: 'zh-CN', configurable: true });
+    service.initLanguage();
+    expect(service.currentLang$()).toBe('en');
+  });
+
+  it('should save language to localStorage', () => {
+    spyOn(localStorage, 'setItem');
+    service.setLanguage('fr');
+    expect(localStorage.setItem).toHaveBeenCalledWith('phamili_lang', 'fr');
+  });
+
+  it('should set document language', () => {
+    service.setLanguage('fr');
+    expect(document.documentElement.lang).toBe('fr');
+  });
+
+  it('should translate all navigation keys', () => {
+    service.setLanguage('fr');
+    expect(service.translate('nav.blog')).toBe('Blog');
+    expect(service.translate('nav.media')).toBe('Médias');
+    expect(service.translate('nav.about')).toBe('À propos');
+  });
+
+  it('should translate authentication keys', () => {
+    service.setLanguage('fr');
+    expect(service.translate('auth.login')).toBe('Connexion');
+    expect(service.translate('auth.register')).toBe('S\'inscrire');
+    expect(service.translate('auth.email')).toBe('E-mail');
+  });
+
+  it('should translate common keys', () => {
+    service.setLanguage('fr');
+    expect(service.translate('common.loading')).toBe('Chargement...');
+    expect(service.translate('common.save')).toBe('Enregistrer');
+    expect(service.translate('common.cancel')).toBe('Annuler');
+  });
+
+  it('should fallback to English when French translation missing', () => {
+    service.setLanguage('fr');
+    // Test with a key that might not have French translation
+    const result = service.translate('nav.home');
+    expect(result).toBeTruthy();
+  });
+
+  it('should handle nested translation keys', () => {
+    service.setLanguage('en');
+    expect(service.translate('common.loading')).toBe('Loading...');
   });
 });

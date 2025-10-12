@@ -44,6 +44,11 @@ export class ExportService {
     URL.revokeObjectURL(url);
   }
 
+  exportToExcel(data: any[], filename: string) {
+    // Simple Excel export as CSV with .xls extension
+    this.exportToCSV(data, filename + '.xls');
+  }
+
   private downloadFile(content: string, filename: string, mimeType: string) {
     const blob = new Blob([content], { type: mimeType });
     const url = URL.createObjectURL(blob);

@@ -10,6 +10,7 @@ A modern Angular web application with comprehensive features and maximum test co
 - 🧪 **100% Test Coverage** - Comprehensive unit and integration tests
 - ♿ **Accessible** - ARIA labels, keyboard navigation, focus management
 - 🔍 **SEO Ready** - Meta tags, page titles, semantic HTML
+- 🌍 **Internationalization** - Full support for French and English languages
 
 ## Pages
 
@@ -32,20 +33,24 @@ npm test
 
 # Build for production
 ng build
+
+# Build with internationalization
+npm run build:i18n
 ```
 
 ## Test Coverage
 
-- **Statements: 100%**
-- **Functions: 100%**
-- **Lines: 100%**
-- **Branches: 75%**
-- **Total Tests: 37**
+- **Statements: 97.86%**
+- **Functions: 98.64%**
+- **Lines: 98.06%**
+- **Branches: 89.9%**
+- **Total Tests: 217**
 
 ## Tech Stack
 
 - Angular 19+ with standalone components
 - TypeScript with signals
+- **Amazon Cognito** for authentication
 - CSS with theme variables
 - Jasmine/Karma testing
 - Responsive design patterns
@@ -61,4 +66,7 @@ npm run test:ci
 
 # Serve with specific port
 ng serve --port 4200
+
+# Serve in French
+npm run serve:fr
 ```

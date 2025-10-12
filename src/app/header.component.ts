@@ -5,11 +5,14 @@ import { DataService } from './data.service';
 import { AuthService } from './auth.service';
 import { SearchService } from './search.service';
 import { NotificationService } from './notification.service';
+import { PwaService } from './services/pwa.service';
+import { I18nService } from './i18n.service';
+import { LanguageSelectorComponent } from './language-selector.component';
 
 @Component({
   selector: 'app-header',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule, LanguageSelectorComponent],
   template: `
     <header class="header">
       <div class="header-content">
@@ -18,7 +21,7 @@ import { NotificationService } from './notification.service';
         </div>
         <div class="header-right">
           <div class="search-box">
-            <input type="text" placeholder="Search..." (input)="onSearch($event)" (keyup.enter)="performSearch()" />
+            <input type="text" [placeholder]="i18n.translate('common.search')" (input)="onSearch($event)" (keyup.enter)="performSearch()" />
             <div class="search-results" *ngIf="searchResults && searchQuery">
               <div class="search-section" *ngIf="searchResults.posts.length">
                 <h4>Posts</h4>
@@ -35,8 +38,12 @@ import { NotificationService } from './notification.service';
             </div>
           </div>
           <div class="user-menu">
-            <button class="theme-toggle" (click)="toggleTheme()">
+            <app-language-selector></app-language-selector>
+            <button class="theme-toggle" (click)="toggleTheme()" [attr.aria-label]="i18n.translate('theme.toggle')">
               {{dataService.theme() === 'light' ? '🌙' : '☀️'}}
+            </button>
+            <button *ngIf="pwaService.canInstall()" class="install-btn" (click)="installApp()">
+              📱
             </button>
             <div class="notifications" (click)="showNotification()">🔔</div>
             <div class="user-section" *ngIf="authService.isAuthenticated$(); else loginSection">
@@ -48,11 +55,11 @@ import { NotificationService } from './notification.service';
                   <strong>{{authService.user$()?.name}}</strong>
                   <small>{{authService.user$()?.email}}</small>
                 </div>
-                <button (click)="logout()">Logout</button>
+                <button (click)="logout()">{{i18n.translate('nav.logout')}}</button>
               </div>
             </div>
             <ng-template #loginSection>
-              <button class="login-btn" (click)="goToLogin()">Login</button>
+              <button class="login-btn" (click)="goToLogin()">{{i18n.translate('nav.login')}}</button>
             </ng-template>
           </div>
         </div>
@@ -186,7 +193,9 @@ export class HeaderComponent {
   authService = inject(AuthService);
   searchService = inject(SearchService);
   notificationService = inject(NotificationService);
+  pwaService = inject(PwaService);
   router = inject(Router);
+  i18n = inject(I18nService);
 
   searchQuery = '';
   searchResults: any = null;
@@ -243,5 +252,12 @@ export class HeaderComponent {
 
   goToLogin() {
     this.router.navigate(['/login']);
+  }
+
+  async installApp() {
+    const installed = await this.pwaService.installApp();
+    if (installed) {
+      this.notificationService.success('App installed successfully!');
+    }
   }
 }
